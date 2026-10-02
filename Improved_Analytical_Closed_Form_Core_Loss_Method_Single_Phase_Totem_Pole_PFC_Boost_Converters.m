@@ -2,10 +2,9 @@
 % ===========================================================================================================
 % Paper Reference: "Improved Core Loss Calculation Method for Single-Phase Totem-Pole PFC Boost Converters"
 % Paper Authors: Tim Geboers, Wout Vanderwegen, Wilmar Martinez, Camilo Suarez
-% ===========================================================================================================
 % Code Authors: Tim Geboers, Camilo Suarez
 % ===========================================================================================================
-% (c) 2026, Tim Geboers
+% (c) 2026, Tim Geboers, all rights reserved
 % ===========================================================================================================
 
 clear; clc; close all;
