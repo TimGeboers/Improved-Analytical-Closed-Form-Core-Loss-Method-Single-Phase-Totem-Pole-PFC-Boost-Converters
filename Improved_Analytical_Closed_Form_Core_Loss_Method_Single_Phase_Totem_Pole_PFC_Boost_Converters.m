@@ -1,4 +1,4 @@
-%% Core Loss Calculation for Coupled Inductors using Analytical iGSE
+% Core Loss Calculation for Coupled Inductors using Analytical iGSE
 % ===========================================================================================================
 % Paper Reference: "Improved Core Loss Calculation Method for Single-Phase Totem-Pole PFC Boost Converters"
 % Paper Authors: Tim Geboers, Wout Vanderwegen, Wilmar Martinez, Camilo Suarez
@@ -12,7 +12,7 @@ clear; clc; close all;
 tic; % Start execution timer
 
 % =======================================
-%%  1. CONVERTER & ELECTRICAL PARAMETERS  
+%  1. CONVERTER & ELECTRICAL PARAMETERS  
 % =======================================
 Vin_rms = 120;                  % V (Grid input RMS)
 Vi_pk   = sqrt(2) * Vin_rms;    % V (Grid input peak)
@@ -31,7 +31,7 @@ fsw     = 120e3;                % Hz (Switching frequency)
 Ts      = 1 / fsw;              % s  (Switching period)
 
 % =============================================================
-%%  2. MAGNETIC CORE GEOMETRY & MATERIAL PROPERTIES (SI Units)
+%  2. MAGNETIC CORE GEOMETRY & MATERIAL PROPERTIES (SI Units)
 % =============================================================
 % Geometry dimensions (3-leg C-core structure)
 w_window = 10e-3;               % m (Window width)
@@ -70,14 +70,14 @@ integral_iGSE = trapz(theta_int, abs(cos(theta_int)).^alpha);
 ki_iGSE = kc / ( 2^(beta - alpha) * (2*pi)^(alpha - 1) * integral_iGSE );
 
 % ===========================================================
-%%  3. TIME-DOMAIN WAVEFORMS & FLUX DERIVATIONS (Section II)
+%  3. TIME-DOMAIN WAVEFORMS & FLUX DERIVATIONS (Section II)
 % ===========================================================
 % Phase angle t0 calculation for CCM integration limits [s]
 t0 = Tp/pi * atan( ( sqrt(4*pi^2*Lleak^2*(Iph_pk)^2 + Tp^2*Vi_pk^2) - Tp*Vi_pk ) ...
                    / ( 2*pi*Lleak*Iph_pk ) );
 theta0 = omega_p * t0; % [rad]
 
-%% --- 3.1 Rising Portion (t = to .. Tp/4) ---
+% --- 3.1 Rising Portion (t = to .. Tp/4) ---
 t_r = (t0 + Ts) : Ts : (Tp/4); % Rising time period [s]
 
 % Solve Eq. 3 - Grid input voltage [V]
@@ -108,7 +108,7 @@ phi_tot_r_ctr = reshape([phi_high_r_ctr; phi_low_r_ctr], 1, []);
 Delta_BM_r_outer = 2 * max(phi_tot_r_outer) / Ae_c_core; % Outer leg
 Delta_BM_r_ctr = 2 * max(phi_tot_r_ctr) / Ae_T_core; % Center leg
 
-%% --- 3.2 Falling Portion (t = Tp/4 .. Tp/2 - to) ---
+% --- 3.2 Falling Portion (t = Tp/4 .. Tp/2 - to) ---
 t_f = (Tp/4) : Ts : (Tp/2 - t0); % Falling time period [s]
 
 % Solve Eq. 3 - Grid input voltage [V]
@@ -134,13 +134,13 @@ Delta_BM_f_outer = Delta_BM_r_outer; % Outer leg (Same Delta_B for rising and fa
 Delta_BM_f_ctr = Delta_BM_r_ctr; % Center leg (Same Delta_B for rising and falling portion)
 
 % ===================================================
-%%  4. ANALYTICAL CORE LOSS EVALUATION (Section III)
+%  4. ANALYTICAL CORE LOSS EVALUATION (Section III)
 % ===================================================
 
 % --------------------------------------------------------------------------------
-%% 4.1 MAJOR LOOP LOSSES - ANALYTICAL INTEGRATION (Section III-B, Eq. 9 & 10 & 27)
+% 4.1 MAJOR LOOP LOSSES - ANALYTICAL INTEGRATION (Section III-B, Eq. 9 & 10 & 27)
 % --------------------------------------------------------------------------------
-%% --- Outer Leg Major Losses ---
+% --- Outer Leg Major Losses ---
 % Solve Eq. 9 & 10 & 27 - Volumetric iGSE core loss (integral) [W/m^3]
 % --- Rising Portion ---
 pref = (ki_iGSE * (Delta_BM_r_outer)^(beta - alpha)) / (Tp * (N * Ae_c_core)^alpha);
@@ -158,7 +158,7 @@ PM_f_outer_integral = 2 * PM_f_Q2; % accounts for two quarter periods (Q2 + Q4) 
 % --- Rising + Falling Portion ---
 PM_outer_vol_integral  = PM_r_outer_integral + PM_f_outer_integral; 
 
-%% --- Center Leg Major Losses ---
+% --- Center Leg Major Losses ---
 % Solve Eq. 9 & 10 & 27 - Volumetric iGSE core loss (integral) [W/m^3]
 % --- Rising Portion ---
 pref_central = (ki_iGSE * (Delta_BM_r_ctr)^(beta - alpha)) / (Tp * (N * Ae_T_core)^alpha);
@@ -177,9 +177,9 @@ PM_f_ctr_integral = 2 * PM_f_Q2_central; % accounts for two quarter periods (Q2 
 PM_ctr_vol_integral  = PM_r_ctr_integral + PM_f_ctr_integral; 
 
 % ---------------------------------------------------------------------------------
-%% 4.2 MINOR LOOP LOSSES - ANALYTICAL INTEGRATION (Section III-C, Eq. 16 & 17 & 28)
+% 4.2 MINOR LOOP LOSSES - ANALYTICAL INTEGRATION (Section III-C, Eq. 16 & 17 & 28)
 % ---------------------------------------------------------------------------------
-%% --- Outer Leg Minor Losses ---
+% --- Outer Leg Minor Losses ---
 % Solve Eq. 16 & 17 & 28 - Volumetric iGSE core loss (integral) [W/m^3]
 % --- Rising Portion ---
 dB_ripple = (Ts * (Vo - vin_r) .* (1 - d_r)) ./ (N * Ae_c_core);
@@ -201,7 +201,7 @@ Pm_f_outer_integral = 2 * PI_falling_outer_leg_integral; % accounts for two quar
 % --- Rising + Falling Portion ---
 Pm_outer_vol_integral  = Pm_r_outer_integral + Pm_f_outer_integral; 
 
-%% --- Center Leg Minor Losses ---
+% --- Center Leg Minor Losses ---
 % Solve Eq. 16 & 17 & 28 - Volumetric iGSE core loss (integral) [W/m^3]
 % --- Rising Portion ---
 dB_ripple_central = (Ts * (Vo - vin_r) .* (1 - d_r)) ./ (N * Ae_T_core);
@@ -224,9 +224,9 @@ Pm_f_ctr_integral = 2 * PI_falling_central_leg_integral; % accounts for two quar
 Pm_ctr_vol_integral  = Pm_r_ctr_integral + Pm_f_ctr_integral; 
 
 % ----------------------------------------------------------------------
-%% 4.3 MAJOR LOOP LOSSES - CLOSED FORM (Section III-B, Eq. 14 & 15 & 27)
+% 4.3 MAJOR LOOP LOSSES - CLOSED FORM (Section III-B, Eq. 14 & 15 & 27)
 % ----------------------------------------------------------------------
-%% --- Outer Leg Major Losses ---
+% --- Outer Leg Major Losses ---
 % Solve Eq. 14 & 15 & 27 - Volumetric iGSE core loss (closed form) [W/m^3]
 % --- Rising Portion ---
 pref_M_r_outer = (2 * ki_iGSE * (Delta_BM_r_outer)^(beta - alpha)) / (Tp * (N * Ae_c_core)^alpha);
@@ -241,7 +241,7 @@ PM_f_outer_CF  = pref_M_f_outer * ((Lleak * Iph_pk) / (Vi_pk * alpha)) * (term_u
 % --- Rising + Falling Portion ---
 PM_outer_vol_CF = PM_r_outer_CF + PM_f_outer_CF;
 
-%% --- Center Leg Major Losses ---
+% --- Center Leg Major Losses ---
 % Solve Eq. 14 & 15 & 27 - Volumetric iGSE core loss (closed form) [W/m^3]
 % --- Rising Portion ---
 pref_M_r_ctr = (2 * ki_iGSE * (Delta_BM_r_ctr)^(beta - alpha)) / (Tp * (N * Ae_T_core)^alpha);
@@ -255,7 +255,7 @@ PM_f_ctr_CF  = pref_M_f_ctr * ((Lleak * Iph_pk) / (Vi_pk * alpha)) * (term_upper
 PM_ctr_vol_CF   = PM_r_ctr_CF + PM_f_ctr_CF;
 
 % ---------------------------------------------------------------------------------------
-%% 4.4 MINOR LOOP LOSSES - CLOSED FORM TAYLOR EXPANSION (Section III-C, Eq. 25 & 26 & 28)
+% 4.4 MINOR LOOP LOSSES - CLOSED FORM TAYLOR EXPANSION (Section III-C, Eq. 25 & 26 & 28)
 % ---------------------------------------------------------------------------------------
 max_order = 12; % Adapt this value (maximum order K) depending on the desired accuracy 
 num_terms = max_order + 1;
@@ -264,7 +264,7 @@ syms theta
 M_mod = Vi_pk / Vo;
 gamma = (2 * pi / Tp) * Lleak * Iph_pk / Vo;
 
-%% --- Outer Leg Minor Losses ---
+% --- Outer Leg Minor Losses ---
 % --- Symbolic Integrands in ANGULAR DOMAIN for Outer Leg ---
 dBm_r_out = (Ts * Vo / (N * Ae_c_core)) * (1 - M_mod*sin(theta)) * (M_mod*sin(theta) - gamma*cos(theta));
 dBm_f_out = (Ts * Vo / (N * Ae_c_core)) * (M_mod*sin(theta)) * (1 - M_mod*sin(theta) + gamma*cos(theta));
@@ -300,7 +300,7 @@ Pm_f_outer_CF = 2 * front_mult_out * Pm_f_int_out; % accounts for two quarter pe
 % --- Rising + Falling Portion ---
 Pm_outer_vol_CF  = Pm_r_outer_CF + Pm_f_outer_CF; 
 
-%% --- Center Leg Minor Losses ---
+% --- Center Leg Minor Losses ---
 % --- Symbolic Integrands in ANGULAR DOMAIN for Center Leg ---
 dBm_r_ctr = (Ts * Vo / (N * Ae_T_core)) * (1 - M_mod*sin(theta)) * (M_mod*sin(theta) - gamma*cos(theta));
 dBm_f_ctr = (Ts * Vo / (N * Ae_T_core)) * (M_mod*sin(theta)) * (1 - M_mod*sin(theta) + gamma*cos(theta));
@@ -334,7 +334,7 @@ Pm_f_ctr_CF = 2 * front_mult_ctr * Pm_f_int_ctr; % accounts for two quarter peri
 Pm_ctr_vol_CF  = Pm_r_ctr_CF + Pm_f_ctr_CF;
 
 % ========================================================
-%%  5. TOTAL LOSS COMPUTATION & REPORTING (Section III-D)
+%  5. TOTAL LOSS COMPUTATION & REPORTING (Section III-D)
 % ========================================================
 % Closed Form Power Loss per Core Segment [W]
 P_outer_legs_CF = 2 * (PM_outer_vol_CF + Pm_outer_vol_CF) * Ve_c_core; % 2 Outer Legs
