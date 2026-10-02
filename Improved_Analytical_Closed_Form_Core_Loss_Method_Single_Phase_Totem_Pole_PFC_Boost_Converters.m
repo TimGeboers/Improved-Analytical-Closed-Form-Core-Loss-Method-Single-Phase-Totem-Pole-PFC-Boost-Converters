@@ -1,9 +1,12 @@
 %% Core Loss Calculation for Coupled Inductors using Analytical iGSE
+% ===========================================================================================================
 % Paper Reference: "Improved Core Loss Calculation Method for Single-Phase Totem-Pole PFC Boost Converters"
 % Paper Authors: Tim Geboers, Wout Vanderwegen, Wilmar Martinez, Camilo Suarez
-%
+% ===========================================================================================================
 % Code Authors: Tim Geboers, Camilo Suarez
-% Refactored & Annotated: September 2026
+% ===========================================================================================================
+% (c) 2025, Tim Geboers
+% ===========================================================================================================
 
 clear; clc; close all;
 tic; % Start execution timer
